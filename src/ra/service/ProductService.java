@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductService implements IGenericService<Product, String>{
-    private static final List<Product> products=new ArrayList<>();
+    public static final List<Product> products=new ArrayList<>();
 
     @Override
     public Product findById(String id) {
@@ -33,7 +33,13 @@ public class ProductService implements IGenericService<Product, String>{
 
     @Override
     public void showAll() {
-        products.forEach(Product::displayData);
+        if (!products.isEmpty()) {
+            System.out.printf("%-5s |%-15s |%-10s |%-15s |%-5s |%-20s |%-6s |\n"
+                    ,"ID","Name","Price","description","stock","catalog Name","status");
+            products.forEach(Product::displayData);
+        }else {
+            System.err.println("There is no product in the list");
+        }
     }
 
     @Override
@@ -52,19 +58,30 @@ public class ProductService implements IGenericService<Product, String>{
 
     @Override
     public void delete() {
-        System.out.println("Enter id of the product you want to edit");
+        System.out.println("Enter id of the product you want to delete");
         String id = InputMethod.getString();
         Product productDel=findById(id);
         if (productDel!=null){
             products.remove(productDel);
+            System.out.println("Delete successfully");
         }else {
             System.err.println("The product does not exist");
         }
     }
 
     public void sortByPrice(){
-        products.stream().sorted((o1, o2) -> (int) (o2.getProductPrice()- o1.getProductPrice()));
+        System.out.println("List Product sorted by price descending");
+        products.stream()
+                .sorted((o1, o2) -> (int) (o2.getProductPrice()- o1.getProductPrice()))
+                .forEach(Product::displayData);
     }
 
+    public void searchByName(){
+        System.out.println("Enter the name of the product you want to search");
+        String searchNameInput=InputMethod.getString();
+        products.stream()
+                .filter(p->p.getProductName().toLowerCase().contains(searchNameInput.toLowerCase()))
+                .forEach(Product::displayData);
+    }
 
 }

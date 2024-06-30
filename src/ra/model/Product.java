@@ -1,5 +1,6 @@
 package ra.model;
 
+import ra.service.CatalogService;
 import ra.utility.InputMethod;
 
 import java.util.List;
@@ -96,46 +97,86 @@ public class Product {
     }
 
     public void displayData() {
-        System.out.println("-------------------------------------------------------------------");
-        System.out.printf("-");
+        System.out.println("-----------------------------------------------------------------------" +
+                "------------------------");
+        System.out.printf("%-5s |%-15s |%-10s |%-15s |%-5s |%-20s |%-6s |\n"
+                ,productId,productName,productPrice,description,stock,catalog.getCatalogName(),status);
     }
 
     ;
 
     public void inputData(boolean isAdd, List<Product> list) {
         if (isAdd) {
-            productId=validateProductId(list);
+            productId = validateProductId(list);
+            status = true;
+
         }
         System.out.println("Enter the name of the product: ");
-        productName=InputMethod.getString();
-        System.out.println("Enter the price of the product: ");
-        productPrice=InputMethod.getDouble();
+        productName = InputMethod.getString();
+        productPrice = validateProductPrice();
         System.out.println("Enter the description of the product: ");
-        description=InputMethod.getString();
-        System.out.println("Enter the stock of the product: ");
-        stock=InputMethod.getInteger();
-//        ===================
-        System.out.println("Enter the catalog of the product: ");
-        catalog=new Catalog();
-//=========================
-        System.out.println("Enter the status of the product: ");
-        status=true;
+        description = InputMethod.getString();
+        stock = validateProductStock();
+        catalog = validateProductCatalog();
 
     }
 //    VALIDATE
 
-    public String validateProductId(List<Product> list){
-        String regexId= "^P.{3}$";
-        while (true){
+    public String validateProductId(List<Product> list) {
+        String regexId = "^P.{3}$";
+        while (true) {
             System.out.println("Enter the product ID: ");
-            String productIdInput= InputMethod.getString();
-            if (regexId.matches(productIdInput)){
-                boolean checkExist= list.stream().anyMatch(p -> p.getProductId().equals(productIdInput));
-                if(checkExist){
+            String productIdInput = InputMethod.getString();
+
+            if (productIdInput.matches(regexId)) {
+                boolean checkExist = list.stream().anyMatch(p -> p.getProductId().equals(productIdInput));
+                if (checkExist) {
                     System.err.println("The product ID already exists!");
-                }else {
+                } else {
                     return productIdInput;
                 }
+            }else {
+                System.err.println("The product ID must has total 4 char and begin with 'P' ");
+            }
+        }
+    }
+
+    public double validateProductPrice() {
+        while (true) {
+            System.out.println("Enter the price of product: ");
+            double productPriceInput = InputMethod.getDouble();
+            if (productPriceInput <= 0) {
+                System.err.println("The price of product must > 0 !");
+            } else {
+                return productPriceInput;
+            }
+        }
+    }
+
+    public int validateProductStock() {
+        while (true) {
+            System.out.println("Enter the stock of product: ");
+            int productStockInput = InputMethod.getInteger();
+            if (productStockInput < 10) {
+                System.err.println("The price of product must >= 10 !");
+            } else {
+                return productStockInput;
+            }
+        }
+    }
+
+    public Catalog validateProductCatalog() {
+        CatalogService catalogService = new CatalogService();
+        while (true) {
+            System.out.println("Enter the id of category for this product: ");
+            CatalogService.catalogs.forEach(Catalog::displayData);
+            System.out.println("Your choice: ");
+            int categoryIdChoice = InputMethod.getInteger();
+            Catalog category = catalogService.findById(categoryIdChoice);
+            if (category != null) {
+                return category;
+            } else {
+                System.err.println("The id of category invalid, please try again!");
             }
         }
     }

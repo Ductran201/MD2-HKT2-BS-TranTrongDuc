@@ -1,7 +1,6 @@
 package ra.run;
 
 import ra.service.CatalogService;
-import ra.service.IGenericService;
 import ra.service.ProductService;
 import ra.utility.InputMethod;
 
@@ -27,9 +26,7 @@ public class BookManagement {
                     break;
                 case 3:
                     return;
-
             }
-
         }
     }
 
@@ -73,8 +70,7 @@ public class BookManagement {
                     "4. Xóa sản phẩm theo mã [5 điểm]\n" +
                     "5. Tìm kiếm sách theo tên sách [10 điểm]\n" +
                     "6. Thay đổi thông tin của sách theo mã sách [10 điểm]\n" +
-                    "\n" +
-                    "7. Quay lại");
+                    "7. Quay lại\n");
 
             System.out.println("Your choice: ");
 
@@ -93,6 +89,7 @@ public class BookManagement {
                     productService.delete();
                     break;
                 case 5:
+                    productService.searchByName();
                     break;
                 case 6:
                     productService.edit();

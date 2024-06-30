@@ -42,7 +42,7 @@ public class Catalog {
     }
 
     public void displayData(){
-        System.out.println("--------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------");
         System.out.printf("%-5d |%-20s |%-20s |\n"
                 , catalogId, catalogName, descriptions);
     }

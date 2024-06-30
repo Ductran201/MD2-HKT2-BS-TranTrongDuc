@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class CatalogService implements IGenericService<Catalog, Integer> {
-    private static final List<Catalog> catalogs = new ArrayList<>();
+    public static final List<Catalog> catalogs = new ArrayList<>();
 
     @Override
     public Catalog findById(Integer id) {
@@ -32,9 +32,13 @@ public class CatalogService implements IGenericService<Catalog, Integer> {
 
     @Override
     public void showAll() {
-        System.out.printf("%-5s |%-20s |%-20s |\n"
-                , "ID", "NAME", "DESCRIPTION");
-        catalogs.forEach(Catalog::displayData);
+        if (!catalogs.isEmpty()) {
+            System.out.printf("%-5s |%-20s |%-20s |\n"
+                    , "ID", "NAME", "DESCRIPTION");
+            catalogs.forEach(Catalog::displayData);
+        } else {
+            System.err.println("No catalog found!");
+        }
     }
 
     @Override
@@ -47,7 +51,7 @@ public class CatalogService implements IGenericService<Catalog, Integer> {
             categoryEdit.displayData();
             categoryEdit.inputData(false);
             System.out.println("Edit successful!!");
-        }else {
+        } else {
             System.err.println("The catalog you want to edit does not exist");
         }
 
@@ -56,19 +60,25 @@ public class CatalogService implements IGenericService<Catalog, Integer> {
 
     @Override
     public void delete() {
-        System.out.println("Enter the id of the catalog you want to edit");
+        System.out.println("Enter the id of the catalog you want to delete");
         int id = InputMethod.getInteger();
         Catalog categoryDel = findById(id);
         if (categoryDel != null) {
-            catalogs.remove(categoryDel);
-            System.out.println("Delete successful!!");
-        }else {
+//            check if cate have product cannot delete:
+            if (ProductService.products.stream().anyMatch(p -> p.getCatalog().equals(categoryDel))) {
+                System.err.println("Can not delete this category because it already has product");
+            } else {
+                catalogs.remove(categoryDel);
+                System.out.println("Delete successful!!");
+            }
+
+        } else {
             System.err.println("The catalog you want to edit does not exist");
         }
     }
 
-    public static int getNewId(){
-        int max=catalogs.stream().map(Catalog::getCatalogId).max(Comparator.naturalOrder()).orElse(0);
-        return max+1;
+    public static int getNewId() {
+        int max = catalogs.stream().map(Catalog::getCatalogId).max(Comparator.naturalOrder()).orElse(0);
+        return max + 1;
     }
 }
